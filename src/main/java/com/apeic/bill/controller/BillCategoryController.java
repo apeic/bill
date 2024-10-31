@@ -61,7 +61,7 @@ public class BillCategoryController {
         billCategoryService.validBillCategory(billCategory, true);
         // todo 填充默认值
         User loginUser = userService.getLoginUser(request);
-//        billCategory.setUserId(loginUser.getId());
+        billCategory.setUserId(loginUser.getId());
         // 写入数据库
         boolean result = billCategoryService.save(billCategory);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -190,8 +190,6 @@ public class BillCategoryController {
                                                                  HttpServletRequest request) {
         ThrowUtils.throwIf(billCategoryQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
-        User loginUser = userService.getLoginUser(request);
-        billCategoryQueryRequest.setUserId(loginUser.getId());
         long current = billCategoryQueryRequest.getCurrent();
         long size = billCategoryQueryRequest.getPageSize();
         // 限制爬虫

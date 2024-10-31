@@ -43,10 +43,5 @@ public class BillDetailAddRequest implements Serializable {
      */
     private Long categoryId;
 
-    /**
-     * 类别名称
-     */
-    private String categoryName;
-
     private static final long serialVersionUID = 1L;
 }

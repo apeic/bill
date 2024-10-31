@@ -1,6 +1,8 @@
 package com.apeic.bill.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.apeic.bill.model.entity.Bill;
+import com.apeic.bill.service.BillService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,10 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +41,9 @@ public class BillCategoryServiceImpl extends ServiceImpl<BillCategoryMapper, Bil
     @Resource
     private UserService userService;
 
+    @Resource
+    private BillService billService;
+
     /**
      * 校验数据
      *
@@ -52,16 +54,21 @@ public class BillCategoryServiceImpl extends ServiceImpl<BillCategoryMapper, Bil
     public void validBillCategory(BillCategory billCategory, boolean add) {
         ThrowUtils.throwIf(billCategory == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
-        String title = billCategory.getName();
+        Long id = billCategory.getId();
+        Long billId = billCategory.getBillId();
+        String name = billCategory.getName();
+
         // 创建数据时，参数不能为空
         if (add) {
             // todo 补充校验规则
-            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
+            Bill bill = billService.getById(billId);
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(bill), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(StringUtils.isBlank(name), ErrorCode.PARAMS_ERROR);
         }
         // 修改数据时，有参数则校验
         // todo 补充校验规则
-        if (StringUtils.isNotBlank(title)) {
-            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
+        if (StringUtils.isNotBlank(name)) {
+            ThrowUtils.throwIf(name.length() > 10, ErrorCode.PARAMS_ERROR, "标题过长");
         }
     }
 
@@ -79,20 +86,23 @@ public class BillCategoryServiceImpl extends ServiceImpl<BillCategoryMapper, Bil
         }
         // todo 从对象中取值
         Long id = billCategoryQueryRequest.getId();
+        Long billId = billCategoryQueryRequest.getBillId();
+        String name = billCategoryQueryRequest.getName();
+
 
         String sortField = billCategoryQueryRequest.getSortField();
         String sortOrder = billCategoryQueryRequest.getSortOrder();
-        Long userId = billCategoryQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
 
         // 模糊查询
+        queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
 
         // JSON 数组查询
 
         // 精确查询
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(billId), "billId", billId);
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),

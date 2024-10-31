@@ -35,10 +35,5 @@ public class BillCategoryQueryRequest extends PageRequest implements Serializabl
      */
     private String name;
 
-    /**
-     * 用户id
-     */
-    private Long userId;
-
     private static final long serialVersionUID = 1L;
 }

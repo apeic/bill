@@ -27,10 +27,5 @@ public class BillAddRequest implements Serializable {
      */
     private String description;
 
-    /**
-     * 创建用户 id
-     */
-    private Long userId;
-
     private static final long serialVersionUID = 1L;
 }

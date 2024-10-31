@@ -1,6 +1,8 @@
 package com.apeic.bill.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.apeic.bill.model.entity.Bill;
+import com.apeic.bill.service.BillService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,6 +43,9 @@ public class BillUserServiceImpl extends ServiceImpl<BillUserMapper, BillUser> i
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private BillService billService;
 
     /**
      * 校验数据
@@ -104,7 +109,12 @@ public class BillUserServiceImpl extends ServiceImpl<BillUserMapper, BillUser> i
 
         // todo 可以根据需要为封装对象补充值，不需要的内容可以删除
         // region 可选
-
+        Long billId = billUserVO.getBillId();
+        if (billId != null && billId > 0) {
+            Bill bill = billService.getById(billId);
+            billUserVO.setBillName(bill.getName());
+            billUserVO.setBillDescription(bill.getDescription());
+        }
         // endregion
 
         return billUserVO;
@@ -131,7 +141,14 @@ public class BillUserServiceImpl extends ServiceImpl<BillUserMapper, BillUser> i
 
         // todo 可以根据需要为封装对象补充值，不需要的内容可以删除
         // region 可选
-
+        billUserVOList.forEach(billUserVO -> {
+            Long billId = billUserVO.getBillId();
+            if (billId != null && billId > 0) {
+                Bill bill = billService.getById(billId);
+                billUserVO.setBillName(bill.getName());
+                billUserVO.setBillDescription(bill.getDescription());
+            }
+        });
         // endregion
 
         billUserVOPage.setRecords(billUserVOList);

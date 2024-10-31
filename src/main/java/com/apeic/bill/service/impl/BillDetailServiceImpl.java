@@ -23,10 +23,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,16 +50,26 @@ public class BillDetailServiceImpl extends ServiceImpl<BillDetailMapper, BillDet
     public void validBillDetail(BillDetail billDetail, boolean add) {
         ThrowUtils.throwIf(billDetail == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
-        String title = billDetail.getCategoryName();
+        Long id = billDetail.getId();
+        Date recordDate = billDetail.getRecordDate();
+        BigDecimal amount = billDetail.getAmount();
+        String description = billDetail.getDescription();
+        Long billId = billDetail.getBillId();
+        Long userId = billDetail.getUserId();
+        Long categoryId = billDetail.getCategoryId();
+
         // 创建数据时，参数不能为空
         if (add) {
             // todo 补充校验规则
-            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(recordDate), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(amount), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(billId), ErrorCode.PARAMS_ERROR);
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(categoryId), ErrorCode.PARAMS_ERROR);
         }
         // 修改数据时，有参数则校验
         // todo 补充校验规则
-        if (StringUtils.isNotBlank(title)) {
-            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
+        if (StringUtils.isNotBlank(description)) {
+            ThrowUtils.throwIf(description.length() > 30, ErrorCode.PARAMS_ERROR, "描述过长");
         }
     }
 
@@ -79,20 +87,29 @@ public class BillDetailServiceImpl extends ServiceImpl<BillDetailMapper, BillDet
         }
         // todo 从对象中取值
         Long id = billDetailQueryRequest.getId();
+        Date recordDate = billDetailQueryRequest.getRecordDate();
+        BigDecimal amount = billDetailQueryRequest.getAmount();
+        String description = billDetailQueryRequest.getDescription();
+        Long billId = billDetailQueryRequest.getBillId();
+        Long userId = billDetailQueryRequest.getUserId();
+        Long categoryId = billDetailQueryRequest.getCategoryId();
+        String categoryName = billDetailQueryRequest.getCategoryName();
 
         String sortField = billDetailQueryRequest.getSortField();
         String sortOrder = billDetailQueryRequest.getSortOrder();
-        Long userId = billDetailQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
 
         // 模糊查询
-
+        queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
         // JSON 数组查询
 
         // 精确查询
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(recordDate), "recordDate", recordDate);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(billId), "billId", billId);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(categoryId), "categoryId", categoryId);
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),

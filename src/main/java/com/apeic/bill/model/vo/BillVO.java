@@ -27,14 +27,14 @@ public class BillVO implements Serializable {
     private Long id;
 
     /**
-     * 关联账单本 id
+     * 账单本名称
      */
-    private Long billId;
+    private String name;
 
     /**
-     * 关联用户 id
+     * 账单本描述
      */
-    private Long userId;
+    private String description;
 
     /**
      * 创建时间
@@ -45,11 +45,6 @@ public class BillVO implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    /**
-     * 创建用户信息
-     */
-    private UserVO user;
 
     /**
      * 封装类转对象

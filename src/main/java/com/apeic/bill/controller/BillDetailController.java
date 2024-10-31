@@ -12,9 +12,11 @@ import com.apeic.bill.model.dto.billdetail.BillDetailAddRequest;
 import com.apeic.bill.model.dto.billdetail.BillDetailEditRequest;
 import com.apeic.bill.model.dto.billdetail.BillDetailQueryRequest;
 import com.apeic.bill.model.dto.billdetail.BillDetailUpdateRequest;
+import com.apeic.bill.model.entity.BillCategory;
 import com.apeic.bill.model.entity.BillDetail;
 import com.apeic.bill.model.entity.User;
 import com.apeic.bill.model.vo.BillDetailVO;
+import com.apeic.bill.service.BillCategoryService;
 import com.apeic.bill.service.BillDetailService;
 import com.apeic.bill.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +44,9 @@ public class BillDetailController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private BillCategoryService billCategoryService;
+
     // region 增删改查
 
     /**
@@ -52,6 +57,7 @@ public class BillDetailController {
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.USER_LOGIN_STATE)
     public BaseResponse<Long> addBillDetail(@RequestBody BillDetailAddRequest billDetailAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(billDetailAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
@@ -62,6 +68,9 @@ public class BillDetailController {
         // todo 填充默认值
         User loginUser = userService.getLoginUser(request);
         billDetail.setUserId(loginUser.getId());
+        Long categoryId = billDetail.getCategoryId();
+        BillCategory billCategory = billCategoryService.getById(categoryId);
+        billDetail.setCategoryName(billCategory.getName());
         // 写入数据库
         boolean result = billDetailService.save(billDetail);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);

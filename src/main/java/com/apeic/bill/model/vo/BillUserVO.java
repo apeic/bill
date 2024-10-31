@@ -2,6 +2,8 @@ package com.apeic.bill.model.vo;
 
 import cn.hutool.json.JSONUtil;
 import com.apeic.bill.model.entity.BillUser;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
@@ -24,17 +26,16 @@ public class BillUserVO implements Serializable {
     private Long id;
 
     /**
-     * 标题
+     * 关联账单本 id
      */
-    private String title;
+    private Long billId;
+
+    private String billName;
+
+    private String billDescription;
 
     /**
-     * 内容
-     */
-    private String content;
-
-    /**
-     * 创建用户 id
+     * 关联用户 id
      */
     private Long userId;
 
@@ -47,16 +48,6 @@ public class BillUserVO implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    /**
-     * 标签列表
-     */
-    private List<String> tagList;
-
-    /**
-     * 创建用户信息
-     */
-    private UserVO user;
 
     /**
      * 封装类转对象

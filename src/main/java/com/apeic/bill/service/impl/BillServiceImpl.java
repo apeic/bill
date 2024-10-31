@@ -57,7 +57,6 @@ public class BillServiceImpl extends ServiceImpl<BillMapper, Bill> implements Bi
             ThrowUtils.throwIf(StringUtils.isBlank(name), ErrorCode.PARAMS_ERROR);
         }
         // 修改数据时，有参数则校验
-
         if (StringUtils.isNotBlank(name)) {
             ThrowUtils.throwIf(name.length() > 20, ErrorCode.PARAMS_ERROR, "账单名称过长");
         }
@@ -80,16 +79,17 @@ public class BillServiceImpl extends ServiceImpl<BillMapper, Bill> implements Bi
         }
         // todo 从对象中取值
         Long id = billQueryRequest.getId();
-
+        String name = billQueryRequest.getName();
+        String description = billQueryRequest.getDescription();
+        Long userId = billQueryRequest.getUserId();
         String sortField = billQueryRequest.getSortField();
         String sortOrder = billQueryRequest.getSortOrder();
-
-        Long userId = billQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
 
         // 模糊查询
-
+        queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
+        queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
         // 精确查询
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
